@@ -40,13 +40,31 @@ public class Perceptron {
     }
 
 
-    public double[] forward(double[] in) {
+    private double[] forward(double[] in) {
         if(in.length != inputs) throw new IllegalArgumentException();
         // Calculate output for each hidden node
         hid = nodes(inputs, hidden, w1, in);
         // Calculate output nodes
         out = nodes(hidden, outputs, w2, hid);
         return out;
+    }
+
+    private double[] backwards(double[] t, double temp) {
+        if(t.length != outputs) throw new IllegalArgumentException();
+
+        // Calculate change in weights
+            // Calculate error
+        for (int i = 0; i < t.length; i++) {
+            for (int j = 0; j < w2[0].length; j++) {
+
+            }
+        }
+            // Calculations for output layer
+
+            // Calculations for hidden layer
+
+
+        // Combine weights with change in weights
     }
 
 
@@ -65,5 +83,7 @@ public class Perceptron {
         }
         return temp;
     }
+
+    private double derivative(double num) {return num * (1-)}
 
 }
