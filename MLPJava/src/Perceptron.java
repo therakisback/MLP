@@ -91,11 +91,14 @@ public class Perceptron {
 
     /**
      * Performs an entire round of back-propagation through the neural network
+     * A HUGE portion of my understanding of this and the functions comes from here:
+     * https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
      * @param expected double[]: to contain expected outputs
      * @return double: Output error calculated in neural network
      */
-    private double backwards(double[] expected, double learningRate) {
+    private double backwards(double[] in, double[] expected, double learningRate) {
         if(expected.length != outputs) throw new IllegalArgumentException();
+        if(in.length != inputs) throw new IllegalArgumentException();
 
         // Array to hold error
         double[] outputNodeDelta = new double[outputs];
@@ -108,26 +111,36 @@ public class Perceptron {
 
         // Calculate weight changes for hidden - output
         for (int i = 0; i < outputs; i++) {
+            // Getting node delta for weight calcs and saving it for 'lower' weights
             double gradient = nodeDelta(expected[i], out[i]);
             outputNodeDelta[i] = gradient;
             for (int j = 0; j < hidden; j++) {
-                // Old weight - learning rate * (gradient of eTotal with respect to old weight)
-                d2[i][j] = w2[i][j] - (learningRate * gradient * hid[j]);
+                d2[i][j] = learningRate * gradient * hid[j];
             }
         }
 
         // Calculate weight changes for input - hidden
         for (int i = 0; i < hidden; i++) {
-            double gradient = nodeDelta(expected[i], hid[i]);
             for (int j = 0; j < inputs; j++) {
                 // Old weight - learning rate * (gradient of eTotal with respect to old weight)
-                d2[i][j] = w2[i][j] - (learningRate * gradient * input[j]);
+                double outputEffect = 0;
+                for (int k = 0; k < outputNodeDelta.length; k++) {
+                    outputEffect += outputNodeDelta[k] * w1[k][i]; }
+                d1[i][j] = learningRate * outputEffect * hid[i] * (1 - hid[i]) * in[j];
             }
         }
 
         // Combine weights with change in weights
-
-
+        for (int i = 0; i < w1.length; i++) {
+            for (int j = 0; j < w1[i].length; j++) {
+                w1[i][j] -= d1[i][j];
+            }
+        }
+        for (int i = 0; i < w2.length; i++) {
+            for (int j = 0; j < w2[i].length; j++) {
+                w2[i][j] -= d2[i][j];
+            }
+        }
 
         return eTotal;
     }
@@ -141,9 +154,7 @@ public class Perceptron {
     }
 
     /**
-     * Gets the partial derivative of total error with respect to a weight
-     * I got this formula from here: https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
-     * I will admit partial derivatives are a function I don't understand
+     * Gets the 'node delta' of an output
      * @param expected Expected value from the output node
      * @param output   Output value of the output node
      * @return Double value return of the function
