@@ -1,30 +1,24 @@
 import java.util.*;
-import java.util.stream.*;
-
-/*
-    I   -   H   -   O
-        X       X
-    I   -   H   -   O
-    w[0][0]: i1 - h1, w[0][1]: i2 - h1, w[1][0]: i1 - h2
- */
-
 
 public class Perceptron {
     // # of input, hidden, and output neurons
-    int inputs, hidden, outputs;
+    private final int inputs, hidden, outputs;
     // Double arrays holding weights for links between input-hidden (w1), hidden-output (w2), and changes
-    double[][] w1, w2, d1, d2;
+    private final double[][] w1, w2, d1, d2;
     // Double array for values in hidden nodes and output nodes
-    double[] hid, out;
+    private double[] hid, out;
 
 
     /**
      * Constructor for a Perceptron object.
-     * @param inputs Int: Number of input nodes to be created
-     * @param hidden Int: Number of hidden nodes
-     * @param outputs Int: Number of outputs
+     * @param inputs int: Number of input nodes, must be >= 1
+     * @param hidden int: Number of hidden nodes, must be >= 1
+     * @param outputs int: Number of outputs, must be >= 1
      */
     public Perceptron(int inputs, int hidden, int outputs) {
+
+        if (inputs < 1 || hidden < 1 || outputs < 1) throw new IllegalArgumentException("Must have at least one of each node.");
+
         // init basic numbers
         this.inputs  = inputs;
         this.hidden  = hidden;
@@ -41,13 +35,13 @@ public class Perceptron {
 
         for(int i = 0; i < inputs; i++) {
             for(int j = 0; j < hidden; j++) {
-                w1[i][j] = (Math.random() * 20) - 10;
+                w1[i][j] = Math.random();
             }
         }
 
         for(int i = 0; i < hidden; i++) {
             for(int j = 0; j < outputs; j++) {
-                w2[i][j] = (Math.random() * 20) - 10;
+                w2[i][j] = Math.random();
             }
         }
 
@@ -61,21 +55,21 @@ public class Perceptron {
      * @param in double[]: Input values
      * @return double[]: Output values
      */
-    private double[] forward(double[] in) {
-        if(in.length != inputs) throw new IllegalArgumentException();
+    public double[] forward(double[] in) {
+        if(in.length != inputs) throw new IllegalArgumentException("Input data doesn't match number of input nodes");
         // Calculate output for each hidden node
         hid = nodes(in, hidden, w1);
         // Calculate output nodes
-        out = nodes(hid, outputs, w2);
+        out = nodes(hid, outputs, w2); // ArrayIndexOutOfBoundsException
         return out;
     }
 
     /**
      * Private function to perform calculations needed for forward propagation to reduce repetition.
-     * @param inputValues values being input at the input nodes
-     * @param outputNode number of "output" nodes in this group - could be hidden or output
-     * @param weights weights for the given connections
-     * @return
+     * @param inputValues double[]: values being input at the input nodes
+     * @param outputNode int: number of "output" nodes in this group - could be hidden or output
+     * @param weights double[][]: weights for the given connections
+     * @return double[]: output values of specified output node.
      */
     private double[] nodes(double[] inputValues, int outputNode, double[][] weights) {
         // Array to hold output values
@@ -83,7 +77,9 @@ public class Perceptron {
         // Loop through each output node, determining sum of inputs and plugging into sigmoid function
         for (int i = 0; i < outputNode; i++) {
             double z = 0;
-            for (int j = 0; j < inputValues.length; j++) {z += (weights[i][j] * inputValues[j]);}
+            for (int j = 0; j < inputValues.length; j++) {
+                z += (weights[j][i] * inputValues[j]);
+            }
             temp[i] = sig(z);
         }
         return temp;
@@ -92,13 +88,13 @@ public class Perceptron {
     /**
      * Performs an entire round of back-propagation through the neural network
      * A HUGE portion of my understanding of this and the functions comes from here:
-     * https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/
+     * <a href="https://mattmazur.com/2015/03/17/a-step-by-step-backpropagation-example/">Matt Mazur "A Step by Step Backpropagation Example" </a>
      * @param expected double[]: to contain expected outputs
      * @return double: Output error calculated in neural network
      */
-    private double backwards(double[] in, double[] expected, double learningRate) {
-        if(expected.length != outputs) throw new IllegalArgumentException();
-        if(in.length != inputs) throw new IllegalArgumentException();
+    public double backwards(double[] in, double[] expected, double learningRate) {
+        if(expected.length != outputs) throw new IllegalArgumentException("Length of data in expected dataset does not match number of outputs");
+        if(in.length != inputs) throw new IllegalArgumentException("Length of data in input dataset does not match number of inputs");
 
         // Array to hold error
         double[] outputNodeDelta = new double[outputs];
@@ -115,7 +111,7 @@ public class Perceptron {
             double gradient = nodeDelta(expected[i], out[i]);
             outputNodeDelta[i] = gradient;
             for (int j = 0; j < hidden; j++) {
-                d2[i][j] = learningRate * gradient * hid[j];
+                d2[j][i] = learningRate * gradient * hid[j];
             }
         }
 
@@ -125,8 +121,8 @@ public class Perceptron {
                 // Old weight - learning rate * (gradient of eTotal with respect to old weight)
                 double outputEffect = 0;
                 for (int k = 0; k < outputNodeDelta.length; k++) {
-                    outputEffect += outputNodeDelta[k] * w1[k][i]; }
-                d1[i][j] = learningRate * outputEffect * hid[i] * (1 - hid[i]) * in[j];
+                    outputEffect += outputNodeDelta[k] * w2[i][k]; }
+                d1[j][i] = learningRate * outputEffect * hid[i] * (1 - hid[i]) * in[j];
             }
         }
 
@@ -147,17 +143,19 @@ public class Perceptron {
 
 
     /**
-     * Gets the sigmoidal value at a given x value
+     * Gets the sigmoidal value at a given x value.
+     * @param x double: x value to find sigmoidal y value at.
+     * @return double: y value at specified x value
      */
     private double sig(double x) {
         return 1/(1+Math.exp(-x));
     }
 
     /**
-     * Gets the 'node delta' of an output
-     * @param expected Expected value from the output node
-     * @param output   Output value of the output node
-     * @return Double value return of the function
+     * Gets the 'node delta' of an output.
+     * @param expected double: Expected value from the output node.
+     * @param output double: Output value of the output node.
+     * @return double: node 'delta' value
      */
     private double nodeDelta(double expected, double output) {
         return ((output - expected) * output * (1 - output));
