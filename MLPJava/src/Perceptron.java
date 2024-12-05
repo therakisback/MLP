@@ -6,7 +6,7 @@ public class Perceptron {
     // Double arrays holding weights for links between input-hidden (w1), hidden-output (w2), and changes
     private final double[][] w1, w2, d1, d2;
     // Double array for values in hidden nodes and output nodes
-    private double[] hid, out;
+    private double[] hid, out, bias1, bias2;
 
 
     /**
@@ -32,6 +32,8 @@ public class Perceptron {
 
         hid = new double[hidden];
         out = new double[outputs];
+        bias1 = new double[hidden];
+        bias2 = new double[outputs];
 
         for(int i = 0; i < inputs; i++) {
             for(int j = 0; j < hidden; j++) {
@@ -45,6 +47,8 @@ public class Perceptron {
             }
         }
 
+        for (double d: bias1) {d = Math.random();}
+        for (double d: bias2) {d = Math.random();}
         for(double[] dx: d1) {Arrays.fill(dx, 0.0);}
         for(double[] dy: d2) {Arrays.fill(dy, 0.0);}
     }
@@ -58,9 +62,9 @@ public class Perceptron {
     public double[] forward(double[] in) {
         if(in.length != inputs) throw new IllegalArgumentException("Input data doesn't match number of input nodes");
         // Calculate output for each hidden node
-        hid = nodes(in, hidden, w1);
+        hid = nodes(in, hidden, w1, bias1);
         // Calculate output nodes
-        out = nodes(hid, outputs, w2); // ArrayIndexOutOfBoundsException
+        out = nodes(hid, outputs, w2, bias2); // ArrayIndexOutOfBoundsException
         return out;
     }
 
@@ -71,12 +75,12 @@ public class Perceptron {
      * @param weights double[][]: weights for the given connections
      * @return double[]: output values of specified output node.
      */
-    private double[] nodes(double[] inputValues, int outputNode, double[][] weights) {
+    private double[] nodes(double[] inputValues, int outputNode, double[][] weights, double[] bias) {
         // Array to hold output values
         double[] temp = new double[outputNode];
         // Loop through each output node, determining sum of inputs and plugging into sigmoid function
         for (int i = 0; i < outputNode; i++) {
-            double z = 0;
+            double z = bias[i];
             for (int j = 0; j < inputValues.length; j++) {
                 z += (weights[j][i] * inputValues[j]);
             }
@@ -110,6 +114,7 @@ public class Perceptron {
             // Getting node delta for weight calcs and saving it for 'lower' weights
             double gradient = nodeDelta(expected[i], out[i]);
             outputNodeDelta[i] = gradient;
+            bias2[i] -= learningRate * gradient;
             for (int j = 0; j < hidden; j++) {
                 d2[j][i] = learningRate * gradient * hid[j];
             }
@@ -121,8 +126,11 @@ public class Perceptron {
                 // Old weight - learning rate * (gradient of eTotal with respect to old weight)
                 double outputEffect = 0;
                 for (int k = 0; k < outputNodeDelta.length; k++) {
-                    outputEffect += outputNodeDelta[k] * w2[i][k]; }
-                d1[j][i] = learningRate * outputEffect * hid[i] * (1 - hid[i]) * in[j];
+                    outputEffect += outputNodeDelta[k] * w2[i][k];
+                }
+                double gradient = outputEffect * hid[i] * (1 - hid[i]);
+                bias1[i] = learningRate * gradient;
+                d1[j][i] = learningRate * gradient * in[j];
             }
         }
 
