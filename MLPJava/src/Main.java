@@ -23,13 +23,13 @@ public class Main {
                 {0},
         };
 
-        //printComplicatedList(mlp.train(100000, input, expected, error));
+        printComplicatedList(mlp.train(100000, input, expected, error));
 
 
         // Vectors
         mlp = new MLP(4, 6, 1);
 
-        error = new File("VectorError2.txt");
+        error = new File("VectorError.txt");
 
         input = new double[400][4];
         expected = new double[400][1];
@@ -52,11 +52,11 @@ public class Main {
         }
 
         // Initial Training
-        //printVectorList(mlp.train(1000000, input, expected, error));
+        printVectorList(mlp.train(1000000, input, expected, error));
 
         // Test Error calculation
-        error = new File("VectorTestError2.txt");
-        //printVectorList(mlp.train(1, testInput, testExpected, error));
+        error = new File("VectorTestError.txt");
+        printVectorList(mlp.train(1, testInput, testExpected, error));
 
 
 
