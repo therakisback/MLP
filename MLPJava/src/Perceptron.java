@@ -75,7 +75,7 @@ public class Perceptron {
      * @param weights double[][]: weights for the given connections
      * @return double[]: output values of specified output node.
      */
-    private double[] nodes(double[] inputValues, int outputNode, double[][] weights, double[] bias) {
+    private static double[] nodes(double[] inputValues, int outputNode, double[][] weights, double[] bias) {
         // Array to hold output values
         double[] temp = new double[outputNode];
         // Loop through each output node, determining sum of inputs and plugging into sigmoid function
@@ -155,7 +155,7 @@ public class Perceptron {
      * @param x double: x value to find sigmoidal y value at.
      * @return double: y value at specified x value
      */
-    private double sig(double x) {
+    private static double sig(double x) {
         return 1/(1+Math.exp(-x));
     }
 
@@ -165,8 +165,10 @@ public class Perceptron {
      * @param output double: Output value of the output node.
      * @return double: node 'delta' value
      */
-    private double nodeDelta(double expected, double output) {
+    private static double nodeDelta(double expected, double output) {
         return ((output - expected) * output * (1 - output));
     }
+
+    public int getOutputs() {return outputs;}
 
 }
