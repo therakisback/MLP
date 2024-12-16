@@ -1,25 +1,26 @@
 # MLP
 A (M)ulti (L)ayer (P)erceptron program for the assignment in the class Connectionist Computing.
 
-TODO:
+MAIN:
+ The main class of this java project contains the bulk of the testing required for the assignment.
+ It will create files on your device showing average error through different numbers of epochs
+  for each test.
 
-Create Neuron class
- ! Initialize weights randomly
+ The "tests" of this project are not JUnit tests seperate from main as it was explicitly stated that
+  the professor should be able to compile and run the project and see the results in files.
+  thus no JUnit tests to allow as such.
 
-Create Perceptron class
- ! Can use any number of inputs and nuerons
- ! Need a training function that can take different types of inputs
- ! Also needs to be able to have different numbers of hidden units
- ? Use a matrix? of nuerons to represent the perceptron
- ? Need to figure out a way to connect the nuerons inputs and outputs
+REPORT:
+ The report contains the details of the project and its level of success, along with places that
+ could be improved and the things I learned during the project.
 
-Test MLP
- ! Must be able to work an XOR
- ! Randomly create 500 groups of 4 numbers (-1 - 1) 
-   and train it to output 'sin(x1-x2+x3-x4)' from 400 groups
-   leaving 100 groups for testing
+ Please read the report for more detail if you are interested.
 
- ! Potentially train the MLP on image recognition
- ! 17 inputs, 26 outputs
- - http://archive.ics.uci.edu/ml/machine-learning-databases/letter-recognition/letter-recognition.data
- - Save 1/5 of examples for testing.
+ TLDR:
+  This particular MLP neural network was very good at creating a working XOR, or other 
+   mathematical calculations like the sine of vectors test.
+
+  It did however struggle with image recognition, likely due to a mismatch between the programming
+   and the type of input / output.
+
+  If there is time, I hope to expand the number of tests done and refine the design.
