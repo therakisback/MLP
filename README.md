@@ -24,3 +24,8 @@ REPORT:
    and the type of input / output.
 
   If there is time, I hope to expand the number of tests done and refine the design.
+
+CODE:
+ As a brief introspective, the abstraction of this code could be significantly better. 
+ Each perceptron (Neuron) could be its own object, and it'd likely clean up the code quite a bit.
+ There is likely more chance here for abstraction to clean up the code as well.
