@@ -1,4 +1,6 @@
-import java.util.*;
+package com.mlpjava;
+
+import java.util.Arrays;
 
 public class Perceptron {
     // # of input, hidden, and output neurons
