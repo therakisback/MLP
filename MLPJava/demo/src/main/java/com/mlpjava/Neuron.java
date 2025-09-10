@@ -1,28 +1,38 @@
 package com.mlpjava;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 /** A class designed to be able to handle the functions of neurons in a network */
 public class Neuron {
     
-    double weight;
-    double bias;        // Bias is often a non-independent variable for neurons, im trying it here anyway.
-    double lastInput;   // Recorded for error propogation
-    double lastOutput;  // ^
+    public ArrayList<Double> weights = new ArrayList<>();
+    public List<Double> lastInputs;   // Recorded for error propogation
+    public double lastOutput;  // ^
 
-    public Neuron() { 
-        weight = Math.random();
-        bias = Math.random();
+    /**
+     * Constructor for a Neuron object
+     * @param inputs The number of inputs the neuron should expect. This should essentially be the number of neurons one layer higher than the layer of this neuron.
+     */
+    public Neuron(int inputs) { 
+        for (int i = 0; i < weights.size(); i++) {
+            weights.add(i, Math.random());
+        } 
     }
 
     /**
      * Propogates an input through the neuron with a sigmoid function
+     * @param inputs The list of input values for this neuron. They must be in the same order as the weights of the neuron.
      * @return output value of the neuron
      */
-    public double propogate(double input) {
-        lastInput = input;
-        double z = bias + weight * input;
+    public double propogate(List<Double> inputs, double bias) {
+        lastInputs = inputs;
+        double z = 0;
+        for (int i = 0; i < inputs.size(); i++) {
+            z += inputs.get(i) * weights.get(i);
+        }
+        z += bias;
         lastOutput =  1/(1+Math.exp(-z));
         return lastOutput;
     }
@@ -31,7 +41,6 @@ public class Neuron {
      * Calculates the error of the neuron given an expected result and an actual result
      * @return double value of neuron error
      */
-    // TODO
     public double error(double expectedValue) {
         return 0.5 * Math.pow(expectedValue - lastOutput, 2);
     }
@@ -43,7 +52,7 @@ public class Neuron {
      * but that seems needlessly complicated
      * @param expectedValues IMPORTANT: The expected values of the list MUST be in the same order of the neurons
      */
-    public double totalError(List<Neuron> neurons, List<Double> expectedValues) {
+    public static double totalError(List<Neuron> neurons, List<Double> expectedValues) {
         if (neurons.size() != expectedValues.size()) throw new IllegalArgumentException("Amount of neurons and expected outputs do not match.");
         double total = 0;
         // Personal thought: A language with functional aspects would be able to implement this loop better
