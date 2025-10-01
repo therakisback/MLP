@@ -16,8 +16,8 @@ public class Neuron {
      * @param inputs The number of inputs the neuron should expect. This should essentially be the number of neurons one layer higher than the layer of this neuron.
      */
     public Neuron(int inputs) { 
-        for (int i = 0; i < weights.size(); i++) {
-            weights.add(i, Math.random());
+        for (int i = 0; i < inputs; i++) {
+            weights.add(Math.random());
         } 
     }
 
