@@ -38,28 +38,38 @@ public class Neuron {
     }
 
     /**
-     * Calculates the error of the neuron given an expected result and an actual result
-     * @return double value of neuron error
+     * Calculates the delta value of a neuron given an expected input or the errors of the output nodes
+     * For an output neuron an expected value (the target) must be provided
+     * For the hidden neuron the list of errors for the output nodes connecting must be provided in order
+     * @return double value of neuron delta value (delta * input of last node = error)
      */
-    public double error(double expectedValue) {
-        return 0.5 * Math.pow(expectedValue - lastOutput, 2);
+    public double deltaO(double expectedValue) {
+        return (-(expectedValue - lastOutput) * lastOutput * (1-lastOutput));
+    }
+
+    /**
+     * Calculates the delta value of a neuron given an expected input or the errors of the output nodes
+     * For an output neuron an expected value (the target) must be provided
+     * For the hidden neuron the list of errors for the output nodes mutliplied by their weight to the hidden node must be provided
+     * @return double value of neuron delta value (delta * input of last node = error)
+     */
+    public double deltaH(double outputErrorSum) {
+        return outputErrorSum * lastOutput * (1 - lastOutput);
     }
 
     /**
      * Function to simplify the calculation of a total error from a set of neurons
      * and a set of expected values.
-     * In future I could use a map input for expectedValues to remove the need for the order to be precise
-     * but that seems needlessly complicated
      * @param expectedValues IMPORTANT: The expected values of the list MUST be in the same order of the neurons
      */
-    public static double totalError(List<Neuron> neurons, List<Double> expectedValues) {
+    public static double totalDelta(List<Neuron> neurons, List<Double> expectedValues) {
         if (neurons.size() != expectedValues.size()) throw new IllegalArgumentException("Amount of neurons and expected outputs do not match.");
         double total = 0;
         // Personal thought: A language with functional aspects would be able to implement this loop better
         for (int i = 0; i < neurons.size(); i++) {
             Neuron n = neurons.get(i);
             double val = expectedValues.get(i);
-            total += n.error(val);
+            total += n.deltaO(val);
         }
         return total;
     }

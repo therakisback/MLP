@@ -7,40 +7,44 @@ import java.util.List;
 public class Perceptron {
 
     private final ArrayList<ArrayList<Neuron>> nodes = new ArrayList<>();
-    private ArrayList<Double> biases;
+    private final double[] biases = new double[2];
     private int inputNodes;
 
-    public Perceptron(int inputNodes, int[] hiddenNodes, int outputNodes) {
+    /**
+     * Creates a new perceptron using the number of each node specified.
+     * Can currently only handle a simple perceptron of 3 layers (including input)
+     * TODO Add complexity by allowing > 1 layer in the hidden nodes
+     */
+    public Perceptron(int inputNodes, int hiddenNodes, int outputNodes) {
         // Constructing neuron objects as specified by inputs
         this.inputNodes = inputNodes;
 
         // Create hidden Neurons
-        for (int i = 0; i < hiddenNodes.length; i++) {
-            biases.add(Math.random());
+        biases[0] = Math.random();
 
-            int in;
-            if (i == 0) in = inputNodes;
-            else in = hiddenNodes[i - 1];
-
-            ArrayList<Neuron> newNeurons = new ArrayList<>();
-            for (int j = 0; j < hiddenNodes[i]; j++) {
-                newNeurons.add(new Neuron(in));
-            }
-            nodes.add(newNeurons);
-            newNeurons.clear();
+        ArrayList<Neuron> newNeurons = new ArrayList<>();
+        for (int i = 0; i < hiddenNodes; i++) {
+            newNeurons.add(new Neuron(inputNodes));
         }
 
+        nodes.add(newNeurons);
+
         // Create output Neurons
-        biases.add(Math.random());
-        ArrayList<Neuron> newNeurons = new ArrayList<>();
+        biases[1] = Math.random();
+        newNeurons.clear();
         for (int j = 0; j < outputNodes; j++) {
-            newNeurons.add(new Neuron(hiddenNodes[hiddenNodes.length - 1]));
+            newNeurons.add(new Neuron(hiddenNodes));
         }
         nodes.add(newNeurons);
     }
 
+        /**
+     * Creates a new perceptron using the number of each node specified.
+     * Can currently only handle a simple perceptron of 3 layers (including input)
+     * With no amount of hidden nodes specified it is assume there will only be 2 layers (input - output)
+     */
     public Perceptron(int inputNodes, int outputNodes) {
-        this(inputNodes, new int[0], outputNodes);
+        this(inputNodes, 0 , outputNodes);
     }
 
     /**
@@ -56,7 +60,7 @@ public class Perceptron {
         for (int i = 0; i < nodes.size(); i++) {
             ArrayList<Double> tempOutput = new ArrayList<>();
             for (Neuron n : nodes.get(i)) {
-                tempOutput.add(n.propogate(output, biases.get(i)));
+                tempOutput.add(n.propogate(output, biases[i]));
             }
             output.clear();
             output.addAll(tempOutput);
@@ -75,7 +79,18 @@ public class Perceptron {
      * Private method for a single round of backpropagation
      */
     private void back() {
+        // Calculate output delta and store values for use in hidden layer
+        ArrayList<Neuron> outputNodes = nodes.get(1);
+        double[] outputDelta = new double[outputNodes.size()];
+        for (int i = 0; i < outputDelta.length; i++) {
+            outputDelta[i] = outputNodes.get(i).deltaO();
+        }
 
+        // Change weights between hidden - output
+
+        // Calculate hidden delta 
+
+        // Change weights between input - hidden
     }
 
 
