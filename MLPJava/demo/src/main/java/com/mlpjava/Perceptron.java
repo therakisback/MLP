@@ -121,8 +121,7 @@ public class Perceptron {
         int inputIndex = 0;
         while (hiddenIndex < hiddenNodes.size()) {
                 List<Double> currentWeights = hiddenNodes.get(hiddenIndex).weights;
-                double lastInput = hiddenNodes.get(hiddenIndex).lastInputs.stream().mapToDouble(Double::doubleValue).sum();
-                double newWeight = currentWeights.get(inputIndex) - learningRate * hiddenDelta[hiddenIndex] * lastInput;
+                double newWeight = currentWeights.get(inputIndex) - learningRate * hiddenDelta[hiddenIndex] * hiddenNodes.get(hiddenIndex).lastInput;
                 currentWeights.set(hiddenIndex, newWeight);
                 if (hiddenIndex == hiddenNodes.size() - 1) {
                     inputIndex = 0;
