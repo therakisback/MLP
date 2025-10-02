@@ -7,7 +7,7 @@ import java.util.List;
 public class Perceptron {
 
     private final ArrayList<ArrayList<Neuron>> nodes = new ArrayList<>();
-    private final double[] biases = {0, 0}; // For now biases will remain un-used as I dont understand how to adjust them properly
+    private double[] biases = {0, 0}; // For now biases will remain un-used as I dont understand how to adjust them properly
     private int inputNodes;
 
     /**
@@ -25,7 +25,7 @@ public class Perceptron {
             newNeurons.add(new Neuron(inputNodes));
         }
 
-        nodes.add(newNeurons);
+        nodes.add(new ArrayList<>(newNeurons));
 
         // Create output Neurons
         newNeurons.clear();
@@ -45,8 +45,26 @@ public class Perceptron {
     }
 
     // Meant for testing
-    public Perceptron(int inputNodes, int hiddenNodes, int outputNodes, double[] inputHiddenWeights, double[] hiddenOutputWeights) {
+    public Perceptron(int inputNodes, int hiddenNodes, int outputNodes, double[][] inputHiddenWeights, double[][] hiddenOutputWeights, double[] biases) {
+        this.inputNodes = inputNodes;
 
+        // Create hidden Neurons
+        ArrayList<Neuron> newNeurons = new ArrayList<>();
+        for (int i = 0; i < hiddenNodes; i++) {
+            newNeurons.add(new Neuron(inputNodes, inputHiddenWeights[i]));
+        }
+
+        nodes.add(new ArrayList<>(newNeurons));
+        newNeurons.clear();
+
+        // Create output Neurons
+        for (int j = 0; j < outputNodes; j++) {
+            newNeurons.add(new Neuron(hiddenNodes, hiddenOutputWeights[j]));
+        }
+        nodes.add(newNeurons);
+
+        // biases
+        this.biases = biases;
     }
 
     /**

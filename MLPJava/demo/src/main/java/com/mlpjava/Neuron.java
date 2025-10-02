@@ -32,6 +32,7 @@ public class Neuron {
         for (int i = 0; i < inputs; i++) {
             this.weights.add(weights[i]);
         }
+        //System.out.println("Neuron created, weights: " + Arrays.toString(weights));
     }
 
     /**
@@ -47,6 +48,7 @@ public class Neuron {
         }
         z += bias;
         lastOutput =  1/(1+Math.exp(-z));
+        //System.out.println("Propogation finished, z = " + z + ", output = " + lastOutput);
         return lastOutput;
     }
 
@@ -85,5 +87,10 @@ public class Neuron {
             total += n.deltaO(val);
         }
         return total;
+    }
+
+    @Override
+    public String toString() {
+        return "Neuron: \n\t Weights: " + weights + "\n\t Last Inputs: " + lastInputs + "\n\t Last Output: " + lastOutput + "\n";
     }
 }
