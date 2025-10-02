@@ -90,12 +90,12 @@ public class Perceptron {
         }
 
         // Change weights between hidden - output
-        // Felt like doing a little exploration and avoiding nested loops here - As I said before I wont always do this for now
+        // Felt like doing a little exploration and avoiding nested loops here - As I said before I wont always do this, for now.
         int hiddenIndex = 0, outputIndex = 0;
         while (outputIndex < outputNodes.size()) {
             List<Double> currentWeights = outputNodes.get(outputIndex).weights;
-            double error = currentWeights.get(hiddenIndex) - learningRate * outputDelta[outputIndex] * hiddenNodes.get(hiddenIndex).lastOutput;
-            currentWeights.set(hiddenIndex, error);
+            double newWeight = currentWeights.get(hiddenIndex) - learningRate * outputDelta[outputIndex] * hiddenNodes.get(hiddenIndex).lastOutput;
+            currentWeights.set(hiddenIndex, newWeight);
             if (hiddenIndex == hiddenNodes.size() - 1) {
                 hiddenIndex = 0;
                 outputIndex++;
@@ -121,14 +121,13 @@ public class Perceptron {
         int inputIndex = 0;
         while (hiddenIndex < hiddenNodes.size()) {
                 List<Double> currentWeights = hiddenNodes.get(hiddenIndex).weights;
-                double error = currentWeights.get(inputIndex) - learningRate * hiddenDelta[hiddenIndex] * hiddenNodes.get(hiddenIndex).lastOutput;  // TODO need input data for error calculation
-                currentWeights.set(hiddenIndex, error);
+                double lastInput = hiddenNodes.get(hiddenIndex).lastInputs.stream().mapToDouble(Double::doubleValue).sum();
+                double newWeight = currentWeights.get(inputIndex) - learningRate * hiddenDelta[hiddenIndex] * lastInput;
+                currentWeights.set(hiddenIndex, newWeight);
                 if (hiddenIndex == hiddenNodes.size() - 1) {
-                    hiddenIndex = 0;
-                    outputIndex++;
-                } else hiddenIndex++;
+                    inputIndex = 0;
+                    hiddenIndex++;
+                } else inputIndex++;
             }
     }
-
-
 }

@@ -73,9 +73,4 @@ public class Neuron {
         }
         return total;
     }
-    
-
-
-
-
 }
