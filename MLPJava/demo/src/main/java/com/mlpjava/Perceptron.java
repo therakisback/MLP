@@ -7,7 +7,7 @@ import java.util.List;
 public class Perceptron {
 
     private final ArrayList<ArrayList<Neuron>> nodes = new ArrayList<>();
-    private final double[] biases = new double[2];
+    private final double[] biases = {0, 0}; // For now biases will remain un-used as I dont understand how to adjust them properly
     private int inputNodes;
 
     /**
@@ -20,8 +20,6 @@ public class Perceptron {
         this.inputNodes = inputNodes;
 
         // Create hidden Neurons
-        biases[0] = Math.random();
-
         ArrayList<Neuron> newNeurons = new ArrayList<>();
         for (int i = 0; i < hiddenNodes; i++) {
             newNeurons.add(new Neuron(inputNodes));
@@ -30,7 +28,6 @@ public class Perceptron {
         nodes.add(newNeurons);
 
         // Create output Neurons
-        biases[1] = Math.random();
         newNeurons.clear();
         for (int j = 0; j < outputNodes; j++) {
             newNeurons.add(new Neuron(hiddenNodes));
@@ -45,6 +42,11 @@ public class Perceptron {
      */
     public Perceptron(int inputNodes, int outputNodes) {
         this(inputNodes, 0 , outputNodes);
+    }
+
+    // Meant for testing
+    public Perceptron(int inputNodes, int hiddenNodes, int outputNodes, double[] inputHiddenWeights, double[] hiddenOutputWeights) {
+
     }
 
     /**
@@ -82,6 +84,8 @@ public class Perceptron {
     private void back(double learningRate, List<Double> expected) {
         ArrayList<Neuron> hiddenNodes = nodes.get(0);
         ArrayList<Neuron> outputNodes = nodes.get(1);
+
+        if (expected.size() != outputNodes.size()) throw new IllegalArgumentException("Number of expected results does not equal number of output Neurons assigned to this perceptron");
 
         // Calculate output delta and store values for use in hidden layer
         double[] outputDelta = new double[outputNodes.size()];
