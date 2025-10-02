@@ -8,7 +8,7 @@ import java.util.List;
 public class Neuron {
     
     public ArrayList<Double> weights = new ArrayList<>();
-    public double lastInput;   // Recorded for error propogation
+    public List<Double> lastInputs;   // Recorded for error propogation
     public double lastOutput;  // ^
 
     /**
@@ -40,11 +40,11 @@ public class Neuron {
      * @return output value of the neuron
      */
     public double propogate(List<Double> inputs, double bias) {
+        lastInputs = inputs;
         double z = 0;
         for (int i = 0; i < inputs.size(); i++) {
             z += inputs.get(i) * weights.get(i);
         }
-        lastInput = z;
         z += bias;
         lastOutput =  1/(1+Math.exp(-z));
         return lastOutput;
